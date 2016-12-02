@@ -49,6 +49,8 @@ class Digest
     @publicFolder = @config.paths.public
     filesToSearch = @_referenceFiles()
 
+    console.log "digest", filesToSearch
+
     # Check if the current environment is one we want to add digests for
     if (@config.env[0] not in @options.environments) and !@options.alwaysRun
       # Replace filename references with regular file name if not running.
