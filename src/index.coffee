@@ -46,6 +46,10 @@ class Digest
     @options.pattern = new RegExp(needle, flags)
 
   onCompile: ->
+    clearTimeout(@workTimeout) if @workTimeout?
+    @workTimeout = setTimeout(theWork, 10)
+
+  theWork: ->
     @publicFolder = @config.paths.public
     filesToSearch = @_referenceFiles()
 
