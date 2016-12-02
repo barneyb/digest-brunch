@@ -4,7 +4,7 @@ I am no longer maintaining digest-brunch. I switched to Webpack for my front end
 applications. Contact me (@mutewinter) if you'd like to take over support for
 digest-brunch.
 
-# digest-brunch [![NPM Version][npm-badge]][npm] [![Build Status][travis-badge]][travis] [![Dependency Status][gemnasium-badge]][gemnasium]
+# digest-brunch 
 
 
 A [Brunch][] plugin that appends a unique SHA digest to asset filenames. Allows
@@ -84,6 +84,8 @@ exports.config =
       manifest: ''
       # An array of infixes for alternate versions of files. This is useful when e.g. using retina.js (http://imulus.github.io/retinajs/) (@2x) for high density images.
       infixes: []
+      # On slow/async disks, you can get multiple onCompile items during a single build (and thus for a single static asset processing cycle). This defers digestion by a set number of milliseconds, and resets each onCompile invocation.
+      delay: 0
 ```
 
 Contributing
