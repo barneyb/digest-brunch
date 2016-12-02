@@ -32,6 +32,8 @@ class Digest
       manifest: ''
       # An array of infixes for alternate versions of files. This is useful when e.g. using retina.js (@2x) for high density images.
       infixes: []
+      # On slow/async disks, you can get multiple onCompile items during a single build (and thus for a single static asset processing cycle). This defers digestion by a set number of milliseconds, and resets each onCompile invocation.
+      workDelay: 0
     }
 
     # Merge config
@@ -46,9 +48,12 @@ class Digest
     @options.pattern = new RegExp(needle, flags)
 
   onCompile: ->
-    clearTimeout(@workTimeout) if @workTimeout?
-    self = @
-    @workTimeout = setTimeout(( -> self.theWork()), 10000)
+    if @options.workDelay == 0
+      @theWork()
+    else
+      clearTimeout(@workTimeout) if @workTimeout?
+      self = @
+      @workTimeout = setTimeout(( -> self.theWork()), @options.workDelay)
 
   theWork: ->
     @publicFolder = @config.paths.public
