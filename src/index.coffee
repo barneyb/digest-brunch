@@ -47,7 +47,7 @@ class Digest
 
   onCompile: ->
     clearTimeout(@workTimeout) if @workTimeout?
-    @workTimeout = setTimeout(theWork, 10)
+    @workTimeout = setTimeout(@theWork, 10)
 
   theWork: ->
     @publicFolder = @config.paths.public
