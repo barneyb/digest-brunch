@@ -45,7 +45,7 @@ class Digest
     flags += 'm' if @options.pattern.multiline
     @options.pattern = new RegExp(needle, flags)
 
-  teardown: ->
+  onCompile: ->
     @publicFolder = @config.paths.public
     filesToSearch = @_referenceFiles()
 
