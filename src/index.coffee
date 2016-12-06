@@ -53,6 +53,7 @@ class Digest
     else
       clearTimeout(@workTimeout) if @workTimeout?
       self = @
+      Digest.logger.log "Deferring digest for #{@options.delay} ms..."
       @workTimeout = setTimeout(( -> self.theWork()), @options.delay)
 
   theWork: ->
