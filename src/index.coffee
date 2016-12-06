@@ -54,7 +54,10 @@ class Digest
       clearTimeout(@workTimeout) if @workTimeout?
       self = @
       Digest.logger.log "Deferring digest for #{@options.delay} ms..."
-      @workTimeout = setTimeout(( -> self.theWork()), @options.delay)
+      @workTimeout = setTimeout(( ->
+        self.theWork()
+        Digest.logger.log "...completed deferred digest"
+      ), @options.delay)
 
   theWork: ->
     @publicFolder = @config.paths.public
