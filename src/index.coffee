@@ -6,6 +6,7 @@ toposort = require 'toposort'
 
 LEADING_SLASH_RE = /^\//
 
+log = (message) -> Digest.logger.log "digest-brunch INFO: #{message}"
 warn = (message) -> Digest.logger.warn "digest-brunch WARNING: #{message}"
 
 class Digest
@@ -48,18 +49,6 @@ class Digest
     @options.pattern = new RegExp(needle, flags)
 
   onCompile: ->
-    if @options.delay == 0
-      @theWork()
-    else
-      clearTimeout(@workTimeout) if @workTimeout?
-      self = @
-      Digest.logger.log "Deferring digest for #{@options.delay} ms..."
-      @workTimeout = setTimeout(( ->
-        self.theWork()
-        Digest.logger.log "...completed deferred digest"
-      ), @options.delay)
-
-  theWork: ->
     @publicFolder = @config.paths.public
     filesToSearch = @_referenceFiles()
     # Check if the current environment is one we want to add digests for
@@ -67,18 +56,30 @@ class Digest
       # Replace filename references with regular file name if not running.
       @_removeReferences(filesToSearch)
     else
-      if @config.server?.run
-        warn 'Not intended to be run with on-demand compilation (brunch watch)'
+      if @options.delay == 0
+        @theWork()
+      else
+        clearTimeout(@workTimeout) if @workTimeout?
+        self = @
+        log "Deferring digest for #{@options.delay} ms..."
+        @workTimeout = setTimeout(( ->
+          self.theWork()
+          log "...completed deferred digest"
+        ), @options.delay)
 
-      if @options.precision < 6
-        warn 'Name collision more likely when less than 6 digits of SHA used.'
+  theWork: ->
+    if @config.server?.run
+      warn 'Not intended to be run with on-demand compilation (brunch watch)'
 
-      sortedFilesToSearch = @_sortByDependencyGraph(filesToSearch)
-      replacementDigestMap = {}
-      for file in sortedFilesToSearch
-        @_replaceFileDigests(file, replacementDigestMap)
+    if @options.precision < 6
+      warn 'Name collision more likely when less than 6 digits of SHA used.'
 
-      @_writeManifestFile(replacementDigestMap)
+    sortedFilesToSearch = @_sortByDependencyGraph(filesToSearch)
+    replacementDigestMap = {}
+    for file in sortedFilesToSearch
+      @_replaceFileDigests(file, replacementDigestMap)
+
+    @_writeManifestFile(replacementDigestMap)
 
   _removeReferences: (files) ->
     return unless @options.discardNonFilenamePatternParts
