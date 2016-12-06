@@ -50,11 +50,10 @@ class Digest
 
   onCompile: ->
     @publicFolder = @config.paths.public
-    filesToSearch = @_referenceFiles()
     # Check if the current environment is one we want to add digests for
     if (@config.env[0] not in @options.environments) and !@options.alwaysRun
       # Replace filename references with regular file name if not running.
-      @_removeReferences(filesToSearch)
+      @_removeReferences(@_referenceFiles())
     else
       if @options.delay == 0
         @theWork()
@@ -74,7 +73,7 @@ class Digest
     if @options.precision < 6
       warn 'Name collision more likely when less than 6 digits of SHA used.'
 
-    sortedFilesToSearch = @_sortByDependencyGraph(filesToSearch)
+    sortedFilesToSearch = @_sortByDependencyGraph(@_referenceFiles())
     replacementDigestMap = {}
     for file in sortedFilesToSearch
       @_replaceFileDigests(file, replacementDigestMap)
